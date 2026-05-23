@@ -1,0 +1,71 @@
+﻿Entries: [4496, 4541, 4554, 1300, 12183, 4998]
+
+=== E1: id=4496  hanji=阿  loma=【白】a ===
+  1 meanings, 3 examples
+  m6352 pos=None def-len=21  '名詞前綴。可加在稱謂、姓名、一般名詞之前。'
+  m6352.ex1  hanji(2+loma(4)=7  mand(2)  '阿母' / '媽媽'
+  m6352.ex2  hanji(2+loma(4)=7  mand(2)  '阿麗' / '人名'
+  m6352.ex3  hanji(3+loma(7)=11  mand(3)  '阿本仔' / '日本人'
+
+=== E2: id=4541  hanji=阿妗  loma=a-kīm ===
+  1 meanings, 0 examples
+  m6409 pos=名詞 def-len=12  '舅媽。稱謂。舅舅的妻子。'
+
+=== E3: id=4554  hanji=阿姆  loma=a-ḿ ===
+  2 meanings, 0 examples
+  m6424 pos=名詞 def-len=12  '伯母。稱謂。伯父的妻子。'
+  m6425 pos=名詞 def-len=13  '尊稱母輩中年紀較大的女子。'
+
+=== E4: id=1300  hanji=仔【替】  loma=á ===
+  14 meanings, 23 examples
+  m1764 pos=None def-len=19  '名詞後綴。放在名詞後面，表示小的意思。'
+  m1765 pos=None def-len=24  '名詞後綴。放在某些動詞之後，形成名詞，多屬工具。'
+  m1766 pos=None def-len=20  '名詞後綴。接在名字或稱謂後面，表示親切。'
+  m1767 pos=None def-len=16  '名詞後綴。放在名詞之後，表輕視。'
+  m1768 pos=None def-len=19  '名詞後綴。放在親屬稱謂之後，表輩分小。'
+  m1769 pos=None def-len=9  '名詞後綴，表處所。'
+  m1770 pos=None def-len=16  '名詞中綴。放在某些固定名詞中間。'
+  m1771 pos=None def-len=19  '名詞中綴。接在姓氏後，表示輕視的意思。'
+  m1772 pos=None def-len=22  '名詞中綴。用於並列名詞之間，表示兩者的關係。'
+  m1773 pos=None def-len=21  '數詞中綴。放在數字中間，表示數目字「百」。'
+  m1774 pos=None def-len=27  '形容詞詞綴，放在形容詞或數量詞之後，表程度低、數量少。'
+  m1775 pos=None def-len=10  '形容詞詞綴，表輕微。'
+  m1776 pos=None def-len=5  '副詞詞綴。'
+  m1777 pos=None def-len=9  '輕聲詞尾，表親切。'
+  m1764.ex1  hanji(2+loma(5)=8  mand(3)  '囡仔' / '小孩子'
+  m1765.ex1  hanji(2+loma(5)=8  mand(2)  '抿仔' / '刷子'
+  m1766.ex1  hanji(3+loma(9)=13  mand(5)  '大伯仔' / '婦人稱夫兄'
+  m1767.ex1  hanji(3+loma(10)=14  mand(2)  '土匪仔' / '土匪'
+  m1767.ex2  hanji(3+loma(12)=16  mand(2)  '警察仔' / '警察'
+  m1768.ex1  hanji(2+loma(3)=6  mand(5)  '姨仔' / '妻子的姊妹'
+  m1768.ex2  hanji(2+loma(4)=7  mand(2)  '舅仔' / '舅子'
+  m1768.ex3  hanji(3+loma(10)=14  mand(2)  '小叔仔' / '小叔'
+  m1769.ex1  hanji(2+loma(7)=10  mand(2)  '邊仔' / '旁邊'
+  m1769.ex2  hanji(2+loma(6)=9  mand(2)  '尾仔' / '末梢'
+  m1770.ex1  hanji(3+loma(10)=14  mand(2)  '今仔日' / '今天'
+  m1771.ex1  hanji(4+loma(15)=20  mand(4)  '邱仔罔舍' / '邱大老爺'
+  m1772.ex1  hanji(3+loma(9)=13  mand(2)  '翁仔某' / '夫妻'
+  m1772.ex2  hanji(3+loma(10)=14  mand(2)  '爸仔囝' / '父子'
+  m1773.ex1  hanji(3+loma(10)=14  mand(4)  '三仔五' / '三百五十'
+  m1774.ex1  hanji(3+loma(10)=14  mand(6)  '小可仔' / '稍微、一點點'
+  m1774.ex2  hanji(3+loma(12)=16  mand(3)  '一點仔' / '一點點'
+  m1775.ex1  hanji(3+loma(8)=12  mand(3)  '舊舊仔' / '舊舊的'
+  m1775.ex2  hanji(3+loma(12)=16  mand(3)  '少少仔' / '少少的'
+  m1776.ex1  hanji(3+loma(8)=12  mand(2)  '久久仔' / '偶爾'
+  m1776.ex2  hanji(3+loma(14)=18  mand(3)  '笑笑仔' / '笑笑的'
+  m1777.ex1  hanji(2+loma(7)=10  mand(2)  '明仔' / '阿明'
+  m1777.ex2  hanji(2+loma(5)=8  mand(2)  '嫂仔' / '嫂子'
+
+=== E5: id=12183  hanji=壓霸  loma=ah-pà ===
+  1 meanings, 1 examples
+  m16609 pos=形容詞 def-len=12  '惡霸。霸道、蠻橫不講理。'
+  m16609.ex1  hanji(14+loma(47)=62  mand(14)  '伊就是傷壓霸，才會遐顧人怨。' / '他就是太霸道，才會引人怨恨。'
+
+=== E6: id=4998  hanji=曷【替】  loma=a̍h ===
+  2 meanings, 4 examples
+  m7023 pos=副詞 def-len=17  '何必、何須、哪。反問語，表示疑問。'
+  m7024 pos=副詞 def-len=8  '表示強調的語氣。'
+  m7023.ex1  hanji(8+loma(26)=35  mand(8)  '你曷使講彼號話？' / '你何須說那種話？'
+  m7023.ex2  hanji(7+loma(23)=31  mand(7)  '你曷著按呢做？' / '你何必這樣做？'
+  m7024.ex1  hanji(9+loma(36)=46  mand(9)  '這種代誌你曷敢做？' / '這種事情你也敢做？'
+  m7024.ex2  hanji(5+loma(19)=25  mand(5)  '這曷著講？' / '這還用說？'

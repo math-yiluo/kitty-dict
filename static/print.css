@@ -1,0 +1,21 @@
+/* Print stylesheet — loaded only when @media print on /learn/[listId]/print. */
+@page {
+  size: A4;
+  margin: 14mm 12mm;
+}
+
+body {
+  background: white !important;
+  color: black !important;
+}
+
+.no-print,
+nav,
+header.no-print {
+  display: none !important;
+}
+
+.print-area,
+.print-doc {
+  overflow: visible !important;
+}

@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+  English localization. Android picks this file when the device's primary
+  locale is any English variant (en, en-US, en-GB, etc.); otherwise falls
+  back to res/values/strings.xml (default 貓咪辭典 / Traditional Chinese).
+
+  Only the display strings are overridden here. package_name and
+  custom_url_scheme stay in the default file since they aren't locale-
+  dependent.
+-->
+<resources>
+    <string name="app_name">Kitty Dict</string>
+    <string name="title_activity_main">Kitty Dict</string>
+</resources>

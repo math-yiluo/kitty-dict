@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  A fully-transparent drawable used as the Android 12+ Theme.SplashScreen
+  `windowSplashScreenAnimatedIcon`. Without overriding the icon attribute,
+  the system splash API would draw the app's launcher icon (the cat) on
+  every cold start; pointing the attribute at this empty shape suppresses
+  that, so the only thing visible during cold-start is the
+  `windowSplashScreenBackground` yellow.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/transparent" />
+</shape>

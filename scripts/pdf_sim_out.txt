@@ -1,0 +1,114 @@
+﻿Simulating entries [4496, 4541, 4554, 1300, 12183, 4998]
+Header: y=70.1px
+
+  #     top       h     bot  type      source
+--------------------------------------------------------------------------------
+  0    70.1    67.9   138.0  head      E1 阿 【白】a
+  1   138.0    37.2   175.2  example   E1.m6352.ex1 阿母
+  2   175.2    37.2   212.4  example   E1.m6352.ex2 阿麗
+  3   212.4    37.2   249.5  example   E1.m6352.ex3 阿本仔
+  4   249.5    81.2   330.7  head      E2 阿妗 a-kīm
+  5   330.7    81.2   411.9  head      E3 阿姆 a-ḿ
+  6   411.9    23.6   435.5  meaning   E3.m6425 #2
+  7   435.5    81.2   516.7  head      E4 仔【替】 á
+  8   516.7    37.2   553.9  example   E4.m1764.ex1 囡仔
+  9   553.9    23.6   577.5  meaning   E4.m1765 #2
+ 10   577.5    37.2   614.7  example   E4.m1765.ex1 抿仔
+ 11   614.7    23.6   638.3  meaning   E4.m1766 #3
+ 12   638.3    37.2   675.5  example   E4.m1766.ex1 大伯仔
+ 13   675.5    23.6   699.1  meaning   E4.m1767 #4
+ 14   699.1    37.2   736.3  example   E4.m1767.ex1 土匪仔
+ 15   736.3    37.2   773.4  example   E4.m1767.ex2 警察仔
+ 16   773.4    23.6   797.0  meaning   E4.m1768 #5
+ 17   797.0    37.2   834.2  example   E4.m1768.ex1 姨仔
+ 18   834.2    37.2   871.4  example   E4.m1768.ex2 舅仔
+ 19   871.4    37.2   908.6  example   E4.m1768.ex3 小叔仔
+ 20   908.6    23.6   932.2  meaning   E4.m1769 #6
+ 21   932.2    37.2   969.4  example   E4.m1769.ex1 邊仔
+ 22   969.4    37.2  1006.6  example   E4.m1769.ex2 尾仔
+ 23  1006.6    23.6  1030.2  meaning   E4.m1770 #7
+ 24  1030.2    37.2  1067.4  example   E4.m1770.ex1 今仔日
+ 25  1067.4    23.6  1091.0  meaning   E4.m1771 #8
+ 26  1091.0    37.2  1128.2  example   E4.m1771.ex1 邱仔罔舍
+ 27  1128.2    23.6  1151.8  meaning   E4.m1772 #9
+ 28  1151.8    37.2  1189.0  example   E4.m1772.ex1 翁仔某
+ 29  1189.0    37.2  1226.2  example   E4.m1772.ex2 爸仔囝
+ 30  1226.2    23.6  1249.8  meaning   E4.m1773 #10
+ 31  1249.8    37.2  1286.9  example   E4.m1773.ex1 三仔五
+ 32  1286.9    23.6  1310.5  meaning   E4.m1774 #11
+ 33  1310.5    37.2  1347.7  example   E4.m1774.ex1 小可仔
+ 34  1347.7    37.2  1384.9  example   E4.m1774.ex2 一點仔
+ 35  1384.9    23.6  1408.5  meaning   E4.m1775 #12
+ 36  1408.5    37.2  1445.7  example   E4.m1775.ex1 舊舊仔
+ 37  1445.7    37.2  1482.9  example   E4.m1775.ex2 少少仔
+ 38  1482.9    23.6  1506.5  meaning   E4.m1776 #13
+ 39  1506.5    37.2  1543.7  example   E4.m1776.ex1 久久仔
+ 40  1543.7    37.2  1580.9  example   E4.m1776.ex2 笑笑仔
+ 41  1580.9    23.6  1604.5  meaning   E4.m1777 #14
+ 42  1604.5    37.2  1641.7  example   E4.m1777.ex1 明仔
+ 43  1641.7    37.2  1678.9  example   E4.m1777.ex2 嫂仔
+ 44  1678.9    81.2  1760.1  head      E5 壓霸 ah-pà
+ 45  1760.1    37.2  1797.2  example   E5.m16609.ex1 伊就是傷壓霸，才會遐顧人怨。
+ 46  1797.2    81.2  1878.4  head      E6 曷【替】 a̍h
+ 47  1878.4    37.2  1915.6  example   E6.m7023.ex1 你曷使講彼號話？
+ 48  1915.6    37.2  1952.8  example   E6.m7023.ex2 你曷著按呢做？
+ 49  1952.8    23.6  1976.4  meaning   E6.m7024 #2
+ 50  1976.4    37.2  2013.6  example   E6.m7024.ex1 這種代誌你曷敢做？
+ 51  2013.6    37.2  2050.8  example   E6.m7024.ex2 這曷著講？
+
+1 page-breaks predicted
+  break before unit #24 (example) @ y=1030.2; pageTop was 0.0; blank-bottom=15.8px; "E4.m1770.ex1 今仔日"
+
+=== Per-unit page assignment ===
+  unit#  0 page=1 relY=   70.1 h=  67.9  head      E1 阿 【白】a
+  unit#  1 page=1 relY=  138.0 h=  37.2  example   E1.m6352.ex1 阿母
+  unit#  2 page=1 relY=  175.2 h=  37.2  example   E1.m6352.ex2 阿麗
+  unit#  3 page=1 relY=  212.4 h=  37.2  example   E1.m6352.ex3 阿本仔
+  unit#  4 page=1 relY=  249.5 h=  81.2  head      E2 阿妗 a-kīm
+  unit#  5 page=1 relY=  330.7 h=  81.2  head      E3 阿姆 a-ḿ
+  unit#  6 page=1 relY=  411.9 h=  23.6  meaning   E3.m6425 #2
+  unit#  7 page=1 relY=  435.5 h=  81.2  head      E4 仔【替】 á
+  unit#  8 page=1 relY=  516.7 h=  37.2  example   E4.m1764.ex1 囡仔
+  unit#  9 page=1 relY=  553.9 h=  23.6  meaning   E4.m1765 #2
+  unit# 10 page=1 relY=  577.5 h=  37.2  example   E4.m1765.ex1 抿仔
+  unit# 11 page=1 relY=  614.7 h=  23.6  meaning   E4.m1766 #3
+  unit# 12 page=1 relY=  638.3 h=  37.2  example   E4.m1766.ex1 大伯仔
+  unit# 13 page=1 relY=  675.5 h=  23.6  meaning   E4.m1767 #4
+  unit# 14 page=1 relY=  699.1 h=  37.2  example   E4.m1767.ex1 土匪仔
+  unit# 15 page=1 relY=  736.3 h=  37.2  example   E4.m1767.ex2 警察仔
+  unit# 16 page=1 relY=  773.4 h=  23.6  meaning   E4.m1768 #5
+  unit# 17 page=1 relY=  797.0 h=  37.2  example   E4.m1768.ex1 姨仔
+  unit# 18 page=1 relY=  834.2 h=  37.2  example   E4.m1768.ex2 舅仔
+  unit# 19 page=1 relY=  871.4 h=  37.2  example   E4.m1768.ex3 小叔仔
+  unit# 20 page=1 relY=  908.6 h=  23.6  meaning   E4.m1769 #6
+  unit# 21 page=1 relY=  932.2 h=  37.2  example   E4.m1769.ex1 邊仔
+  unit# 22 page=1 relY=  969.4 h=  37.2  example   E4.m1769.ex2 尾仔
+  unit# 23 page=1 relY= 1006.6 h=  23.6  meaning   E4.m1770 #7
+  unit# 24 page=2 relY=    0.0 h=  37.2  example   E4.m1770.ex1 今仔日
+  unit# 25 page=2 relY=   37.2 h=  23.6  meaning   E4.m1771 #8
+  unit# 26 page=2 relY=   60.8 h=  37.2  example   E4.m1771.ex1 邱仔罔舍
+  unit# 27 page=2 relY=   98.0 h=  23.6  meaning   E4.m1772 #9
+  unit# 28 page=2 relY=  121.6 h=  37.2  example   E4.m1772.ex1 翁仔某
+  unit# 29 page=2 relY=  158.8 h=  37.2  example   E4.m1772.ex2 爸仔囝
+  unit# 30 page=2 relY=  196.0 h=  23.6  meaning   E4.m1773 #10
+  unit# 31 page=2 relY=  219.6 h=  37.2  example   E4.m1773.ex1 三仔五
+  unit# 32 page=2 relY=  256.8 h=  23.6  meaning   E4.m1774 #11
+  unit# 33 page=2 relY=  280.3 h=  37.2  example   E4.m1774.ex1 小可仔
+  unit# 34 page=2 relY=  317.5 h=  37.2  example   E4.m1774.ex2 一點仔
+  unit# 35 page=2 relY=  354.7 h=  23.6  meaning   E4.m1775 #12
+  unit# 36 page=2 relY=  378.3 h=  37.2  example   E4.m1775.ex1 舊舊仔
+  unit# 37 page=2 relY=  415.5 h=  37.2  example   E4.m1775.ex2 少少仔
+  unit# 38 page=2 relY=  452.7 h=  23.6  meaning   E4.m1776 #13
+  unit# 39 page=2 relY=  476.3 h=  37.2  example   E4.m1776.ex1 久久仔
+  unit# 40 page=2 relY=  513.5 h=  37.2  example   E4.m1776.ex2 笑笑仔
+  unit# 41 page=2 relY=  550.7 h=  23.6  meaning   E4.m1777 #14
+  unit# 42 page=2 relY=  574.3 h=  37.2  example   E4.m1777.ex1 明仔
+  unit# 43 page=2 relY=  611.5 h=  37.2  example   E4.m1777.ex2 嫂仔
+  unit# 44 page=2 relY=  648.7 h=  81.2  head      E5 壓霸 ah-pà
+  unit# 45 page=2 relY=  729.9 h=  37.2  example   E5.m16609.ex1 伊就是傷壓霸，才會遐顧人怨。
+  unit# 46 page=2 relY=  767.0 h=  81.2  head      E6 曷【替】 a̍h
+  unit# 47 page=2 relY=  848.2 h=  37.2  example   E6.m7023.ex1 你曷使講彼號話？
+  unit# 48 page=2 relY=  885.4 h=  37.2  example   E6.m7023.ex2 你曷著按呢做？
+  unit# 49 page=2 relY=  922.6 h=  23.6  meaning   E6.m7024 #2
+  unit# 50 page=2 relY=  946.2 h=  37.2  example   E6.m7024.ex1 這種代誌你曷敢做？
+  unit# 51 page=2 relY=  983.4 h=  37.2  example   E6.m7024.ex2 這曷著講？

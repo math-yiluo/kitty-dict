@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Legacy: @capacitor/assets v3 switched the adaptive icon XML in
+  mipmap-anydpi-v26/ to use a PNG (`@mipmap/ic_launcher_background`) for the
+  background layer rather than this color resource. This file is kept for
+  potential fallback / older Capacitor configs, with the value updated to the
+  app's main yellow #FFF8D6 to match the PNG.
+-->
+<resources>
+    <color name="ic_launcher_background">#FFF8D6</color>
+</resources>

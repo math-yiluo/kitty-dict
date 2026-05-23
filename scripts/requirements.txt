@@ -1,0 +1,6 @@
+# build_db.py uses only the Python standard library (zipfile, xml.etree, sqlite3).
+# Nothing required to install.
+#
+# Optional, only if you want to rewrite build_db.py around pandas:
+# pandas>=2.0
+# odfpy>=1.4

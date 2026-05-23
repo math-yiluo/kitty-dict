@@ -1,0 +1,137 @@
+/* Charis SIL — self-hosted IPA-style font for Taiwanese romanization.
+   Splits into 5 unicode-range subsets, so browsers fetch only what they need
+   (台羅 uses mostly latin + latin-ext for ḿ ò̍ etc.). Bundled because most
+   user devices (especially desktops) don't ship Charis SIL natively, and
+   fallback fonts (Georgia / system serif) misplace the acute above `m`. */
+@import '@fontsource/charis-sil/400.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Plangothic — fallback font for rare CJK characters (𪜶 / 𠢕 / 𫝛 / 𥍉 …)
+ * that system fonts on most platforms don't ship glyphs for.
+ *
+ * Plangothic ships its full CJK coverage split across two files because
+ * TrueType caps each font at 64K glyphs:
+ *   P1 covers BMP CJK + Ext A–F  (most of the rare Hokkien chars live here)
+ *   P2 covers Ext G + rarer scripts
+ *
+ * The unicode-range trick keeps system fonts in charge for everything below
+ * U+10000 (BMP) — Plangothic only kicks in for chars in Plane 2-3, and the
+ * browser only downloads the file that actually has the glyph it needs.
+ */
+@font-face {
+  font-family: 'Plangothic';
+  src:
+    url('/fonts/PlangothicP1-Regular.woff2') format('woff2'),
+    url('/fonts/PlangothicP1-Regular.ttf') format('truetype');
+  unicode-range: U+20000-2FFFF;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Plangothic';
+  src:
+    url('/fonts/PlangothicP2-Regular.woff2') format('woff2'),
+    url('/fonts/PlangothicP2-Regular.ttf') format('truetype');
+  unicode-range: U+30000-3134F;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* iOS / Android safe-area helpers */
+:root {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+html,
+body {
+  height: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  /* Plangothic listed first so Plane 2 chars (𪜶 etc.) hit our bundled font
+     before falling through to system fonts that may lack those glyphs. */
+  font-family:
+    'Plangothic',
+    'Noto Sans TC',
+    'PingFang TC',
+    'Microsoft JhengHei',
+    system-ui,
+    sans-serif;
+  background-color: theme('colors.bg.DEFAULT');
+  color: theme('colors.ink.DEFAULT');
+  overflow: hidden; /* container handles scrolling per page */
+  /* Disable text selection app-wide so Android long-press doesn't pop up
+     the selection / share menu over any text. Matches native-app feel.
+     Inputs / textareas / contenteditable are exempted below so dialogs
+     and the search box still work. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+input,
+textarea,
+[contenteditable='true'] {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/*
+ * Visible accent-green scrollbar everywhere — matches the ListPicker sheet's
+ * pattern. Applied globally so 表單卡片清單、詞條詳情頁、播放清單、設定頁、
+ * dialog 等任何有 overflow 的容器都自動顯示一致的窄綠軌。
+ *
+ * Webkit pseudo-elements affect every element by default; .no-scrollbar (with
+ * higher specificity, .class > *) still wins for the horizontal tab strips
+ * that intentionally hide their bar.
+ *
+ * Firefox: scrollbar-width / scrollbar-color are inheritable, so setting on
+ * the root cascades to all descendants.
+ */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.accent.soft') transparent;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: theme('colors.accent.soft');
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.accent.DEFAULT');
+}
+
+/* Hide scrollbars on horizontal containers (tabs) — beats the global rule
+   above via class specificity. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* Romanization font: Charis SIL is the gold standard for Taiwanese romanization
+   (designed by SIL for IPA-style diacritics — `ḿ` `tsi̍t` `e̍h` etc. anchor
+   correctly above each letter). Most user devices don't ship it, so we fall
+   back to Noto Serif / Noto Sans, which Android (Noto-based) and iOS (similar
+   ranges in PingFang / system serif) handle properly. Georgia is last because
+   it places the acute too far left on `m`. */
+.loma {
+  font-family: 'Charis SIL', 'Doulos SIL', 'Noto Serif', 'Noto Sans', Georgia,
+    serif;
+  font-feature-settings: 'liga' 0;
+}

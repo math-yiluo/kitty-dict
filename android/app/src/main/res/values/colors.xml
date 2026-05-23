@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Color resources used by themes (styles.xml). `launch_background` is the
+  solid colour shown briefly during cold-start in lieu of a branded splash
+  image — matches the app's main yellow #FFF8D6 so the transition into the
+  loaded UI is seamless.
+-->
+<resources>
+    <color name="launch_background">#FFF8D6</color>
+</resources>

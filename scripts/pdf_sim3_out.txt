@@ -1,0 +1,42 @@
+﻿Testing with entries [4496, 4541, 4554, 1300, 12183, 4998, 3236, 9427]
+
+=== Multiplier 1.0x ===
+[mult=1.0] header ends at y=75.4
+  E4 head: abs_y=454 h=68  → page 1 at relY=454
+    break #1 before unit#24 (blank=10px) "E4.m1770.ex1 今仔日"
+    break #2 before unit#52 (blank=-6px) "E7 抑是 ia̍h-sī"
+
+=== Multiplier 1.3x ===
+[mult=1.3] header ends at y=98.1
+  E4 head: abs_y=590 h=88  → page 1 at relY=590
+    break #1 before unit#17 (blank=3px) "E4.m1768.ex1 姨仔"
+    break #2 before unit#41 (blank=27px) "E4.m1777 #14"
+    break #3 before unit#58 (blank=25px) "E8.m12946.ex1 愛情"
+
+=== Multiplier 1.6x ===
+[mult=1.6] header ends at y=120.7
+  E4 head: abs_y=727 h=109  → page 1 at relY=727
+    break #1 before unit#12 (blank=16px) "E4.m1766.ex1 大伯仔"
+    break #2 before unit#32 (blank=8px) "E4.m1774 #11"
+    break #3 before unit#48 (blank=12px) "E6.m7023.ex2 你曷著按呢做？"
+    break #4 before unit#64 (blank=40px) "E8.m12948.ex1 你行路愛小心。"
+
+=== Multiplier 2.0x ===
+[mult=2.0] header ends at y=150.9
+  E4 head: abs_y=908 h=136  → page 1 at relY=908
+    break #1 before unit#8 (blank=2px) "E4.m1764.ex1 囡仔"
+    break #2 before unit#24 (blank=19px) "E4.m1770.ex1 今仔日"
+    break #3 before unit#40 (blank=19px) "E4.m1776.ex2 笑笑仔"
+    break #4 before unit#51 (blank=71px) "E6.m7024.ex2 這曷著講？"
+    break #5 before unit#63 (blank=32px) "E8.m12948 #4"
+
+=== Multiplier 2.4x ===
+[mult=2.4] header ends at y=181.1
+  E4 head: abs_y=1090 h=163  → page 2 at relY=89
+    break #1 before unit#6 (blank=45px) "E3.m6425 #2"
+    break #2 before unit#18 (blank=32px) "E4.m1768.ex2 舅仔"
+    break #3 before unit#31 (blank=49px) "E4.m1773.ex1 三仔五"
+    break #4 before unit#44 (blank=-16px) "E5 壓霸 ah-pà"
+    break #5 before unit#52 (blank=111px) "E7 抑是 ia̍h-sī"
+    break #6 before unit#62 (blank=39px) "E8.m12947.ex2 想著就愛笑。"
+

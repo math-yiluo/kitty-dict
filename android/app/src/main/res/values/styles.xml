@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:background">@null</item>
+    </style>
+
+
+    <!--
+      Cold-start launch theme. We deliberately do NOT render a branded splash
+      (the previous setup used @drawable/splash, a cat illustration generated
+      by @capacitor/assets). The goal is a near-instant transition into the
+      WebView with no "small cat" splash interlude:
+        - android:background = yellow → covers Android 11- which still uses
+          the activity's window background as the cold-start "splash".
+        - windowSplashScreenBackground = yellow → Android 12+ splash API
+          background colour.
+        - windowSplashScreenAnimatedIcon = transparent shape → Android 12+
+          would otherwise force-draw the launcher icon (still the cat) on
+          every cold start; pointing at a blank shape suppresses it.
+        - postSplashScreenTheme = AppTheme.NoActionBar → theme to swap into
+          once the activity is ready (already used elsewhere).
+    -->
+    <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+        <item name="android:background">@color/launch_background</item>
+        <item name="windowSplashScreenBackground">@color/launch_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_blank</item>
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
+    </style>
+</resources>
