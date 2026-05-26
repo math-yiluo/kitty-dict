@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { search } from '$lib/search';
   import type { SearchHit } from '$lib/types';
+  import type { Snapshot } from './$types';
   import EntryCard from '$lib/components/EntryCard.svelte';
 
   let query = '';
@@ -10,10 +11,56 @@
   let error = '';
   let debounce: ReturnType<typeof setTimeout> | null = null;
   let inputEl: HTMLInputElement | null = null;
+  // The scrollable results container. Bound below so the snapshot can save
+  // and restore the user's scroll position.
+  let resultsEl: HTMLDivElement | undefined;
+  // Scroll position to apply once the results container is in the DOM.
+  // Populated by snapshot.restore on back-navigation.
+  let pendingScrollTop: number | null = null;
+
+  // SvelteKit snapshot: preserve query + hits + scroll position across
+  // navigation (e.g. user types → results → taps a card → /entry/[id] →
+  // back). Without this, the page re-mounts with cleared state and the
+  // user lands back on the empty search bar instead of where they were.
+  //
+  // Hits are restored directly rather than re-running search() — results
+  // are deterministic for a given query, so re-fetching is wasted work
+  // and would briefly flash a 'searching…' state on back-nav.
+  export const snapshot: Snapshot<{
+    query: string;
+    hits: SearchHit[];
+    scrollTop: number;
+  }> = {
+    capture: () => ({
+      query,
+      hits,
+      scrollTop: resultsEl?.scrollTop ?? 0
+    }),
+    restore: (snap) => {
+      query = snap.query;
+      hits = snap.hits;
+      pendingScrollTop = snap.scrollTop;
+    }
+  };
 
   onMount(() => {
-    inputEl?.focus();
+    // Skip auto-focus if the snapshot restored a non-empty query — the
+    // user just navigated back from a detail page and shouldn't have the
+    // input steal focus from whatever they were about to do next.
+    if (!query) inputEl?.focus();
   });
+
+  // Apply any pending scroll position once the results container exists.
+  // Reactive on `resultsEl` (becomes defined when {#if query} flips on)
+  // and `hits` (ensures the list children are laid out → scrollHeight is
+  // final, so scrollTop assignment lands at the right offset).
+  $: if (resultsEl && hits.length > 0 && pendingScrollTop !== null) {
+    const target = pendingScrollTop;
+    pendingScrollTop = null;
+    void tick().then(() => {
+      if (resultsEl) resultsEl.scrollTop = target;
+    });
+  }
 
   function onInput() {
     if (debounce) clearTimeout(debounce);
@@ -148,7 +195,7 @@
   </div>
 
   {#if query}
-    <div class="flex-1 overflow-y-auto px-4 pb-4 pt-2">
+    <div bind:this={resultsEl} class="flex-1 overflow-y-auto px-4 pb-4 pt-2">
       {#if error}
         <p class="text-red-700 text-sm">錯誤：{error}</p>
       {:else if loading}
