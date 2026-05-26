@@ -81,11 +81,15 @@
       inputEl?.focus();
     } else {
       // Restored from snapshot (user pressed back from /entry/[id]).
-      // Don't focus, AND actively blur to defeat any browser/WebView
-      // auto-focus-on-history-back behaviour — otherwise the keyboard
-      // pops up uninvited the moment they land back on the results list.
-      // Wrap in rAF so we run AFTER any auto-focus the browser might do.
-      requestAnimationFrame(() => inputEl?.blur());
+      // blur() alone is NOT enough on Android WebView — the keyboard
+      // often stays up because the OS's IME visibility is decoupled
+      // from JS focus. Use Capacitor Keyboard.hide() via the helper
+      // (works on native; blur fallback on web). Call multiple times
+      // because WebView's auto-focus-on-history-back can fire at
+      // several moments during page restoration; we need to win all of them.
+      void dismissKeyboard();
+      requestAnimationFrame(() => void dismissKeyboard());
+      setTimeout(() => void dismissKeyboard(), 200);
     }
   });
 
@@ -149,17 +153,44 @@
   // Search/Go button. Two effects:
   //   1. Flush any pending debounced runSearch immediately, so they see
   //      results right away instead of waiting out the 180ms timer.
-  //   2. Blur the input → dismisses the soft keyboard, freeing the screen
-  //      for browsing results. The input keeps its value, and if the user
-  //      wants to refine the query they just tap the input to re-open
-  //      the keyboard (default browser behaviour).
+  //   2. Dismiss the soft keyboard, freeing the screen for browsing
+  //      results. Input keeps its value; tapping it re-opens the
+  //      keyboard normally (default browser behaviour).
   function onSubmit() {
     if (debounce) {
       clearTimeout(debounce);
       debounce = null;
       void runSearch();
     }
+    void dismissKeyboard();
+  }
+
+  /**
+   * Hide the soft keyboard reliably across web and native (Capacitor).
+   *
+   * Web: blur() is usually enough — browsers tie keyboard visibility to
+   * the focused input element.
+   *
+   * Native (Android WebView): blur() alone often leaves the keyboard
+   * up because the IME visibility state is decoupled from the WebView's
+   * focused element — the system remembers "keyboard should be open" and
+   * keeps showing it. @capacitor/keyboard's hide() calls the Android
+   * InputMethodManager directly, which is the only reliable way to
+   * dismiss it.
+   *
+   * Dynamic imports so the plugin doesn't enter the bundle on web /
+   * before we actually need it.
+   */
+  async function dismissKeyboard() {
     inputEl?.blur();
+    try {
+      const { Capacitor } = await import('@capacitor/core');
+      if (!Capacitor.isNativePlatform()) return;
+      const { Keyboard } = await import('@capacitor/keyboard');
+      await Keyboard.hide();
+    } catch {
+      // Plugin missing or platform error — blur was the fallback.
+    }
   }
 </script>
 
