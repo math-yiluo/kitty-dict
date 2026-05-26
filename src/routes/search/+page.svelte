@@ -44,10 +44,18 @@
   };
 
   onMount(() => {
-    // Skip auto-focus if the snapshot restored a non-empty query — the
-    // user just navigated back from a detail page and shouldn't have the
-    // input steal focus from whatever they were about to do next.
-    if (!query) inputEl?.focus();
+    if (!query) {
+      // Fresh entry to /search (no restored state): focus the input so
+      // the soft keyboard pops up — user came here to type.
+      inputEl?.focus();
+    } else {
+      // Restored from snapshot (user pressed back from /entry/[id]).
+      // Don't focus, AND actively blur to defeat any browser/WebView
+      // auto-focus-on-history-back behaviour — otherwise the keyboard
+      // pops up uninvited the moment they land back on the results list.
+      // Wrap in rAF so we run AFTER any auto-focus the browser might do.
+      requestAnimationFrame(() => inputEl?.blur());
+    }
   });
 
   // Apply any pending scroll position once the results container exists.
@@ -99,6 +107,23 @@
     hits = [];
     inputEl?.focus();
   }
+
+  // Submit handler — fires when user presses Enter or the soft keyboard's
+  // Search/Go button. Two effects:
+  //   1. Flush any pending debounced runSearch immediately, so they see
+  //      results right away instead of waiting out the 180ms timer.
+  //   2. Blur the input → dismisses the soft keyboard, freeing the screen
+  //      for browsing results. The input keeps its value, and if the user
+  //      wants to refine the query they just tap the input to re-open
+  //      the keyboard (default browser behaviour).
+  function onSubmit() {
+    if (debounce) {
+      clearTimeout(debounce);
+      debounce = null;
+      void runSearch();
+    }
+    inputEl?.blur();
+  }
 </script>
 
 <section class="flex-1 flex flex-col overflow-hidden">
@@ -116,7 +141,12 @@
   >
     <h1 class="sr-only">檢索</h1>
     <div class="w-full {query ? '' : 'max-w-md'}">
-      <div class="relative">
+      <!--
+        Wrap input in a form so the soft keyboard's "Search/Go" button (or a
+        physical Enter key) fires submit. preventDefault stops the would-be
+        page reload; onSubmit handles flush + blur (see script above).
+      -->
+      <form class="relative" on:submit|preventDefault={onSubmit}>
         <input
           bind:this={inputEl}
           type="search"
@@ -155,7 +185,7 @@
             </svg>
           </button>
         {/if}
-      </div>
+      </form>
       {#if !query}
         <!--
           Idle hint: four worked examples covering the four input styles the
