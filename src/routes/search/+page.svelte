@@ -17,6 +17,14 @@
   // Scroll position to apply once the results container is in the DOM.
   // Populated by snapshot.restore on back-navigation.
   let pendingScrollTop: number | null = null;
+  // The query string that produced the currently-displayed `hits`. Used by
+  // snapshot.restore to detect "hits are stale relative to query" — happens
+  // when the user typed/edited fast enough to leave the page before the
+  // debounced runSearch had a chance to fire (or while it was still in
+  // flight). Without this, the restored page either shows "沒有找到" for a
+  // query that was never actually searched, or stale hits from the previous
+  // query the user had typed.
+  let lastSearchedQuery = '';
 
   // SvelteKit snapshot: preserve query + hits + scroll position across
   // navigation (e.g. user types → results → taps a card → /entry/[id] →
@@ -25,21 +33,44 @@
   //
   // Hits are restored directly rather than re-running search() — results
   // are deterministic for a given query, so re-fetching is wasted work
-  // and would briefly flash a 'searching…' state on back-nav.
+  // and would briefly flash a 'searching…' state on back-nav. EXCEPTION:
+  // if the saved hits don't match the saved query (user left mid-edit),
+  // we DO re-run so the user doesn't see misleading content.
   export const snapshot: Snapshot<{
     query: string;
     hits: SearchHit[];
+    lastSearchedQuery: string;
     scrollTop: number;
   }> = {
     capture: () => ({
       query,
       hits,
+      lastSearchedQuery,
       scrollTop: resultsEl?.scrollTop ?? 0
     }),
     restore: (snap) => {
       query = snap.query;
       hits = snap.hits;
+      // Snapshots from a pre-update build won't have this field — treat
+      // as '' (forces re-search if query is non-empty, which is the safe
+      // outcome and matches the post-update intent).
+      lastSearchedQuery = snap.lastSearchedQuery ?? '';
       pendingScrollTop = snap.scrollTop;
+
+      // Re-run search when the saved hits don't represent the saved query.
+      // Two cases this covers:
+      //   - User typed but navigated before the 180ms debounce fired
+      //     (hits empty, query non-empty, lastSearchedQuery stale)
+      //   - User edited the query mid-debounce; saved hits are from a
+      //     previous query
+      // Use setTimeout 0 (not direct call) so this happens AFTER snapshot
+      // restoration finishes and the component is fully wired up.
+      const trimmed = query.trim();
+      if (trimmed && trimmed !== lastSearchedQuery) {
+        loading = true;
+        if (debounce) clearTimeout(debounce);
+        debounce = setTimeout(runSearch, 0);
+      }
     }
   };
 
@@ -86,6 +117,7 @@
     const q = query.trim();
     if (!q) {
       hits = [];
+      lastSearchedQuery = '';
       loading = false;
       return;
     }
@@ -98,6 +130,10 @@
       error = (err as Error).message;
       hits = [];
     } finally {
+      // Mark q as displayed regardless of outcome (success / 0 hits / error).
+      // This keeps snapshot.restore from re-running the same failing search
+      // on every back-navigation; the user can manually retry by editing.
+      lastSearchedQuery = q;
       loading = false;
     }
   }
@@ -105,6 +141,7 @@
   function clear() {
     query = '';
     hits = [];
+    lastSearchedQuery = '';
     inputEl?.focus();
   }
 
