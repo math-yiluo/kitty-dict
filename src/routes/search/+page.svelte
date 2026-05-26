@@ -25,6 +25,11 @@
   // query that was never actually searched, or stale hits from the previous
   // query the user had typed.
   let lastSearchedQuery = '';
+  // Flipped by snapshot.restore to signal "we just came back from /entry —
+  // the keyboard should stay down". Watched by the reactive block below
+  // so the dismiss runs regardless of whether snapshot.restore fires
+  // before or after onMount (SvelteKit doesn't guarantee the order).
+  let snapshotJustRestored = false;
 
   // SvelteKit snapshot: preserve query + hits + scroll position across
   // navigation (e.g. user types → results → taps a card → /entry/[id] →
@@ -56,6 +61,10 @@
       // outcome and matches the post-update intent).
       lastSearchedQuery = snap.lastSearchedQuery ?? '';
       pendingScrollTop = snap.scrollTop;
+      // Signal to the reactive dismiss-keyboard block. We DON'T dismiss
+      // here directly because snapshot.restore might run before inputEl
+      // is bound (bind:this is set during/after mount).
+      snapshotJustRestored = true;
 
       // Re-run search when the saved hits don't represent the saved query.
       // Two cases this covers:
@@ -75,23 +84,30 @@
   };
 
   onMount(() => {
-    if (!query) {
-      // Fresh entry to /search (no restored state): focus the input so
-      // the soft keyboard pops up — user came here to type.
+    // Only focus if snapshot.restore hasn't already flagged this as a
+    // back-navigation. If restore fires AFTER onMount (SvelteKit timing
+    // not guaranteed), the reactive block below catches it.
+    if (!snapshotJustRestored && !query) {
       inputEl?.focus();
-    } else {
-      // Restored from snapshot (user pressed back from /entry/[id]).
-      // blur() alone is NOT enough on Android WebView — the keyboard
-      // often stays up because the OS's IME visibility is decoupled
-      // from JS focus. Use Capacitor Keyboard.hide() via the helper
-      // (works on native; blur fallback on web). Call multiple times
-      // because WebView's auto-focus-on-history-back can fire at
-      // several moments during page restoration; we need to win all of them.
-      void dismissKeyboard();
-      requestAnimationFrame(() => void dismissKeyboard());
-      setTimeout(() => void dismissKeyboard(), 200);
     }
   });
+
+  // Reactive: dismiss the keyboard whenever snapshot.restore flips the
+  // flag, regardless of whether that happens before or after onMount.
+  // We reset the flag inside the block so a future restore (unlikely but
+  // possible) can re-trigger. inputEl is in the dependency set so the
+  // block re-evaluates once bind:this fires, in case the flag was set
+  // before the element was bound.
+  $: if (snapshotJustRestored && inputEl) {
+    snapshotJustRestored = false;
+    // Multi-attempt dismiss — WebView's auto-focus-on-history-back can
+    // fire at the initial render, the first paint, OR a tick later.
+    // We cover all three. The dismissKeyboard helper handles native
+    // (Capacitor Keyboard.hide) vs web (blur).
+    void dismissKeyboard();
+    requestAnimationFrame(() => void dismissKeyboard());
+    setTimeout(() => void dismissKeyboard(), 200);
+  }
 
   // Apply any pending scroll position once the results container exists.
   // Reactive on `resultsEl` (becomes defined when {#if query} flips on)
