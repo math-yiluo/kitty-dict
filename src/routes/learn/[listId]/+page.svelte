@@ -5,10 +5,12 @@
   import {
     getList,
     getListEntries,
+    getUserListEntryIds,
     renameUserList,
     deleteUserList,
     removeFromUserList
   } from '$lib/lists';
+  import type { EntryWithMeanings } from '$lib/lists';
   import {
     getCachedList,
     setCachedList,
@@ -301,6 +303,13 @@
         oneShotScrollNext = true;
         gotoIndex(0);
       }
+      // Stale-while-revalidate: the cache could be stale if the list was
+      // mutated from elsewhere (e.g. adding/removing this entry via the
+      // detail page's 加入單字表 menu, which writes Dexie but doesn't touch
+      // this in-memory cache). We've already rendered the cached content
+      // synchronously (scroll restored); now verify it against the DB in
+      // the background and silently refresh if it changed.
+      void revalidate(id, cached.entries);
       return;
     }
 
@@ -334,6 +343,52 @@
       error = (err as Error).message;
     } finally {
       loading = false;
+    }
+  }
+
+  /**
+   * Background cache validation for the stale-while-revalidate cache-hit
+   * path. Cheap first pass: compare the DB's current entry-id sequence to
+   * what we rendered from cache. If identical (the common case), do nothing
+   * — no re-render, no scroll disruption. If changed, do the full reload
+   * (meta + entries) and swap it in; loadList's id-signature guard ensures
+   * the player actually rebuilds even on a same-length swap.
+   *
+   * Built-in lists (cat:/great700:) are immutable SQLite — skip entirely.
+   *
+   * NEVER sets `loading = true`: that would unmount the list ("載入中…")
+   * and lose the scroll position we just restored. The swap happens
+   * silently under the existing content.
+   */
+  async function revalidate(id: ListId, cachedEntries: EntryWithMeanings[]) {
+    if (!id.startsWith('user:')) return;
+    try {
+      const freshIds = await getUserListEntryIds(id);
+      // Bail if the user navigated to a different list while we awaited.
+      if (listId !== id) return;
+
+      const cachedIds = cachedEntries.map((e) => e.id);
+      const unchanged =
+        freshIds.length === cachedIds.length &&
+        freshIds.every((fid, i) => fid === cachedIds[i]);
+      if (unchanged) return;
+
+      // Content changed elsewhere — pull the full record and swap it in.
+      const [meta, entries] = await Promise.all([getList(id), getListEntries(id)]);
+      if (listId !== id) return; // navigated away during the second await
+
+      if (!meta) {
+        // List was deleted from elsewhere while we were on it.
+        clearCachedList(id);
+        error = '找不到這張表單';
+        return;
+      }
+      listMeta = meta;
+      loadList(id, entries);
+      setCachedList(id, meta, entries);
+    } catch {
+      // Revalidation is best-effort; on failure we keep showing the cached
+      // content rather than surfacing an error over otherwise-fine data.
     }
   }
 

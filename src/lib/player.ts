@@ -374,10 +374,27 @@ if (browser) {
 
 // ---------- public API ----------
 
+/**
+ * Order-sensitive structural equality on the entry-ID sequence. Used by
+ * loadList to decide whether a reload actually changes the list.
+ *
+ * MUST compare IDs, not just length: a same-length mutation (remove one
+ * entry + add another) leaves length unchanged but content different. A
+ * length-only check would let loadList early-return and keep stale cards
+ * on screen. See revalidate() in /learn/[listId]/+page.svelte.
+ */
+function sameEntryIds(a: EntryWithMeanings[], b: EntryWithMeanings[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i].id !== b[i].id) return false;
+  }
+  return true;
+}
+
 export function loadList(listId: ListId, entries: EntryWithMeanings[]) {
   const cur = get(player);
-  if (cur.listId === listId && cur.entries.length === entries.length) {
-    // Same list reload — keep player state in place.
+  if (cur.listId === listId && sameEntryIds(cur.entries, entries)) {
+    // Same list, identical entry sequence — keep player state in place.
     return;
   }
   if (audio) {

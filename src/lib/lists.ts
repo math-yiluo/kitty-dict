@@ -273,10 +273,29 @@ export async function removeFromUserList(id: ListId, entryId: number): Promise<v
   const { kind, key } = parseListId(id);
   if (kind !== 'user') throw new Error('Cannot edit built-in list');
   const numId = Number(key);
-  await userDb()
-    .listEntries.where('[listId+entryId]')
-    .equals([numId, entryId])
-    .delete();
+  // Bump updatedAt alongside the delete (mirrors addToUserList) so the list
+  // sorts to the top of listUserLists() after a removal, and so any
+  // updatedAt-based staleness logic stays correct. Wrapped in a transaction
+  // for atomicity.
+  await userDb().transaction('rw', userDb().lists, userDb().listEntries, async () => {
+    await userDb().listEntries.where('[listId+entryId]').equals([numId, entryId]).delete();
+    await userDb().lists.update(numId, { updatedAt: Date.now() });
+  });
+}
+
+/**
+ * Cheap fetch of just the ordered entry-id sequence for a USER list, for
+ * cache-staleness detection (SWR revalidation on /learn/[listId]). One
+ * indexed Dexie query — far cheaper than getListEntries (which also pulls
+ * meanings + examples). Returns [] for non-user (built-in, immutable) lists;
+ * callers should skip revalidation for those entirely.
+ */
+export async function getUserListEntryIds(id: ListId): Promise<number[]> {
+  const { kind, key } = parseListId(id);
+  if (kind !== 'user') return [];
+  const numId = Number(key);
+  const links = await userDb().listEntries.where('listId').equals(numId).sortBy('addedAt');
+  return links.map((l) => l.entryId);
 }
 
 export async function listsContaining(entryId: number): Promise<DictList[]> {
