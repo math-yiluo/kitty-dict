@@ -298,6 +298,29 @@ export async function getUserListEntryIds(id: ListId): Promise<number[]> {
   return links.map((l) => l.entryId);
 }
 
+/**
+ * Given entry IDs, return the subset that actually exists in the dictionary,
+ * preserving input order. Mirrors the orphan-filtering getListEntries does
+ * (a link whose entry was removed by a dictionary-data update gets dropped),
+ * but cheaply — one id-only SELECT, no meanings/examples.
+ *
+ * Used by the /learn/[listId] revalidation to tell a real membership change
+ * apart from an orphaned-link artifact (raw link count differs from resolved
+ * count) BEFORE paying for a full getListEntries. Without this, a stale
+ * orphaned link would make every list-open look "changed" and trigger a
+ * redundant full reload.
+ */
+export async function filterExistingEntryIds(ids: number[]): Promise<number[]> {
+  if (ids.length === 0) return [];
+  const placeholders = ids.map(() => '?').join(',');
+  const rows = await queryAll<{ id: number }>(
+    `SELECT id FROM entries WHERE id IN (${placeholders})`,
+    ids
+  );
+  const existing = new Set(rows.map((r) => r.id));
+  return ids.filter((id) => existing.has(id));
+}
+
 export async function listsContaining(entryId: number): Promise<DictList[]> {
   const userLinks = await userDb().listEntries.where('entryId').equals(entryId).toArray();
   const userListIds = [...new Set(userLinks.map((l) => l.listId))];

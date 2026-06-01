@@ -6,6 +6,7 @@
     getList,
     getListEntries,
     getUserListEntryIds,
+    filterExistingEntryIds,
     renameUserList,
     deleteUserList,
     removeFromUserList
@@ -363,17 +364,24 @@
   async function revalidate(id: ListId, cachedEntries: EntryWithMeanings[]) {
     if (!id.startsWith('user:')) return;
     try {
-      const freshIds = await getUserListEntryIds(id);
-      // Bail if the user navigated to a different list while we awaited.
-      if (listId !== id) return;
-
       const cachedIds = cachedEntries.map((e) => e.id);
-      const unchanged =
-        freshIds.length === cachedIds.length &&
-        freshIds.every((fid, i) => fid === cachedIds[i]);
-      if (unchanged) return;
 
-      // Content changed elsewhere — pull the full record and swap it in.
+      // Tier 1 (fast path, common case): compare the raw link sequence with a
+      // single cheap Dexie query. Identical → nothing changed, done.
+      const rawIds = await getUserListEntryIds(id);
+      if (listId !== id) return; // navigated away during the await
+      if (sameIdSeq(rawIds, cachedIds)) return;
+
+      // Tier 2: the raw sequence differs — but that could be a genuine change
+      // OR just an orphaned link (entry removed by a dictionary-data update;
+      // getListEntries drops it, so it's not in cachedIds). Resolve to
+      // existing ids and compare apples-to-apples BEFORE paying for the full
+      // meanings+examples fetch. One cheap id-only SELECT.
+      const resolvedIds = await filterExistingEntryIds(rawIds);
+      if (listId !== id) return;
+      if (sameIdSeq(resolvedIds, cachedIds)) return; // orphan-only diff, no real change
+
+      // Tier 3: genuine membership change — full reload + cache refresh.
       const [meta, entries] = await Promise.all([getList(id), getListEntries(id)]);
       if (listId !== id) return; // navigated away during the second await
 
@@ -390,6 +398,15 @@
       // Revalidation is best-effort; on failure we keep showing the cached
       // content rather than surfacing an error over otherwise-fine data.
     }
+  }
+
+  /** Order-sensitive equality on two entry-id sequences. */
+  function sameIdSeq(a: number[], b: number[]): boolean {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
   }
 
   // -------------------------------------------------------------------------
