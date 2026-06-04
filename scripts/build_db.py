@@ -38,6 +38,21 @@ def strip_diacritics(s: str) -> str:
     ).lower()
 
 
+# MoE embeds display annotations inside the searchable text: 【替】 (substitute
+# char) suffixed to 漢字, and 【白】/【文】/【俗】 (vernacular/literary/colloquial
+# reading) prefixed to 羅馬字. These pollute search (break exact/prefix match,
+# leak into the FTS tokenizer). We keep the originals for display but ALSO store
+# annotation-free *_s columns to match against. Mirror of stripAnnotations() in
+# src/lib/search.ts and scripts/migrate_search_clean.py — keep the three in sync.
+_ANNOT_RE = re.compile(r"【[^】]*】")
+
+
+def strip_annotations(s: str) -> str:
+    if not s:
+        return ""
+    return _ANNOT_RE.sub("", s).replace("【", "").replace("】", "").strip()
+
+
 CATEGORY_ALIASES = {
     # The MOE .ods column lists "相關用語" as an opaque sub-node that becomes
     # context-free once flattened; rename it to something the user can act on.
@@ -146,7 +161,12 @@ CREATE TABLE entries (
     loma TEXT NOT NULL,
     category TEXT,
     audio_file TEXT,
-    loma_norm TEXT NOT NULL
+    loma_norm TEXT NOT NULL,
+    -- Annotation-stripped twins of hanji / loma / loma_norm, used for search
+    -- matching (see strip_annotations). Originals stay for display.
+    hanji_s TEXT NOT NULL,
+    loma_s TEXT NOT NULL,
+    loma_norm_s TEXT NOT NULL
 );
 
 CREATE TABLE meanings (
@@ -208,6 +228,9 @@ CREATE INDEX idx_examples_entry ON examples(entry_id);
 CREATE INDEX idx_entries_hanji ON entries(hanji);
 CREATE INDEX idx_entries_loma ON entries(loma);
 CREATE INDEX idx_entries_loma_norm ON entries(loma_norm);
+CREATE INDEX idx_entries_hanji_s ON entries(hanji_s);
+CREATE INDEX idx_entries_loma_s ON entries(loma_s);
+CREATE INDEX idx_entries_loma_norm_s ON entries(loma_norm_s);
 
 CREATE VIEW category_summary AS
     SELECT category, COUNT(*) AS n
@@ -221,14 +244,18 @@ CREATE VIEW great700_summary AS
     FROM great700_entries
     GROUP BY list_idx;
 
+-- FTS indexes the annotation-stripped *_s columns so MoE's 【白】/【文】/【俗】/
+-- 【替】 markers don't leak into the tokenizer (otherwise the unicode61
+-- tokenizer splits 仔【替】 into a bare 替 token and searching 替 wrongly hits
+-- it). Matches the *_s columns search.ts queries.
 CREATE VIRTUAL TABLE entries_fts USING fts5(
-    hanji, loma, loma_norm,
+    hanji_s, loma_s, loma_norm_s,
     content='entries', content_rowid='id',
     prefix='1 2 3',
     tokenize='unicode61 remove_diacritics 2'
 );
-INSERT INTO entries_fts (rowid, hanji, loma, loma_norm)
-    SELECT id, hanji, loma, loma_norm FROM entries;
+INSERT INTO entries_fts (rowid, hanji_s, loma_s, loma_norm_s)
+    SELECT id, hanji_s, loma_s, loma_norm_s FROM entries;
 
 CREATE VIRTUAL TABLE meanings_fts USING fts5(
     definition,
@@ -289,9 +316,15 @@ def main() -> int:
         audio = get(r, c_audio) or None
         loma_norm = strip_diacritics(loma)
         conn.execute(
-            "INSERT OR IGNORE INTO entries (id, type, hanji, loma, category, audio_file, loma_norm) "
-            "VALUES (?,?,?,?,?,?,?)",
-            (eid, type_, hanji, loma, category, audio, loma_norm),
+            "INSERT OR IGNORE INTO entries "
+            "(id, type, hanji, loma, category, audio_file, loma_norm, hanji_s, loma_s, loma_norm_s) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?)",
+            (
+                eid, type_, hanji, loma, category, audio, loma_norm,
+                strip_annotations(hanji),
+                strip_annotations(loma),
+                strip_annotations(loma_norm),
+            ),
         )
         for cat in split_categories(category or ""):
             conn.execute(

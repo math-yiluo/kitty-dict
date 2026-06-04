@@ -84,6 +84,19 @@ function stripDiacritics(s: string): string {
   return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
+// Strip MoE display annotations that the source embeds inside the searchable
+// text: 【替】 (substitute-char marker, suffixed to 漢字) and 【白】/【文】/【俗】
+// (vernacular / literary / colloquial reading markers, prefixed to 羅馬字).
+// The DB now carries annotation-free hanji_s/loma_s/loma_norm_s columns we
+// match against (see scripts/migrate_search_clean.py + build_db.py); we apply
+// the SAME cleaning to the QUERY so a pasted/typed 【…】 (or a lone 【) doesn't
+// leak into the comparison — e.g. searching just "【" yields nothing instead
+// of prefix-matching every annotated row.
+const ANNOTATION = /【[^】]*】/g;
+function stripAnnotations(s: string): string {
+  return s.replace(ANNOTATION, '').replace(/[【】]/g, '');
+}
+
 function makePrefixFtsQuery(raw: string): string {
   const cleaned = raw.replace(NON_WORD, ' ').trim();
   if (!cleaned) return '';
@@ -104,9 +117,11 @@ export interface SearchRow {
 }
 
 export async function search(rawQuery: string, limit = 30): Promise<SearchHit[]> {
-  // Translate tone-number notation (e.g. `tong5` → `tông`) up-front so the rest
-  // of the pipeline sees the same form the DB stores.
-  const q = convertToneNumbers(rawQuery.trim());
+  // Drop any 【…】 display annotation from the query first (see stripAnnotations),
+  // THEN translate tone-number notation (e.g. `tong5` → `tông`) so the rest of
+  // the pipeline sees the same form the cleaned DB columns store. A query that
+  // is nothing but annotation (e.g. "【") collapses to empty → no results.
+  const q = convertToneNumbers(stripAnnotations(rawQuery.trim()));
   if (!q) return [];
   const qNorm = stripDiacritics(q);
   const fts = makePrefixFtsQuery(q);
@@ -118,23 +133,28 @@ export async function search(rawQuery: string, limit = 30): Promise<SearchHit[]>
 
   const sql = `
     WITH ranked AS (
-      -- Rank 1: exact tone-aware match. Keeping loma_norm OUT of this tier is
+      -- All exact/prefix tiers match the annotation-stripped *_s columns so
+      -- MoE's 【白】/【文】/【俗】/【替】 markers don't break or pollute matching
+      -- (e.g. 芳 with loma 【白】phang must still exact-match 'phang'). The
+      -- SELECT below returns the ORIGINAL hanji/loma for display.
+      --
+      -- Rank 1: exact tone-aware match. Keeping loma_norm_s OUT of this tier is
       -- what makes 'thau2' (→ tháu) surface tone-2 above other tones — if it
       -- were OR'd in here, all toneN entries would tie at rank 1.
       SELECT id, 1 AS rank FROM entries
-      WHERE hanji = ?1 OR loma = ?1
+      WHERE hanji_s = ?1 OR loma_s = ?1
 
       UNION ALL
       -- Rank 2: exact match after stripping diacritics — the tone-fuzzy
       -- fallback. Catches 'thau' (no tone) and 'thau1' for any toneN entry,
       -- but loses to rank 1 when the user typed an explicit, correct tone.
       SELECT id, 2 AS rank FROM entries
-      WHERE loma_norm = ?2
+      WHERE loma_norm_s = ?2
 
       UNION ALL
       -- Rank 3: prefix match
       SELECT id, 3 AS rank FROM entries
-      WHERE (hanji LIKE ?1 || '%' OR loma LIKE ?1 || '%' OR loma_norm LIKE ?2 || '%')
+      WHERE (hanji_s LIKE ?1 || '%' OR loma_s LIKE ?1 || '%' OR loma_norm_s LIKE ?2 || '%')
 
       UNION ALL
       -- Rank 4: entry FTS (hanji / loma / loma_norm)
