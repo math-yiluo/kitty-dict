@@ -60,7 +60,6 @@
       // as '' (forces re-search if query is non-empty, which is the safe
       // outcome and matches the post-update intent).
       lastSearchedQuery = snap.lastSearchedQuery ?? '';
-      pendingScrollTop = snap.scrollTop;
       // Signal to the reactive dismiss-keyboard block. We DON'T dismiss
       // here directly because snapshot.restore might run before inputEl
       // is bound (bind:this is set during/after mount).
@@ -76,9 +75,19 @@
       // restoration finishes and the component is fully wired up.
       const trimmed = query.trim();
       if (trimmed && trimmed !== lastSearchedQuery) {
+        // Don't restore the saved scroll here: it belongs to the OLD result
+        // set, and the re-search will replace `hits` with different content.
+        // Restoring it would scroll against the stale list (the scroll block
+        // guards on hits.length>0 and would fire immediately), then never
+        // re-apply after the new hits land. Leave pendingScrollTop null so
+        // the fresh results start at the top.
+        pendingScrollTop = null;
         loading = true;
         if (debounce) clearTimeout(debounce);
         debounce = setTimeout(runSearch, 0);
+      } else {
+        // Hits match the query — restore the exact scroll position.
+        pendingScrollTop = snap.scrollTop;
       }
     }
   };
