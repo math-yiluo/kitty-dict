@@ -42,6 +42,15 @@ ios/.idea/
 !.env.example
 *.local
 
+# Python bytecode cache (from scripts/*.py, e.g. build_db.py / migrations)
+__pycache__/
+*.pyc
+
+# Vite's transient TS-config transpile artifacts (auto-generated, sometimes
+# left behind if a dev/build process is interrupted)
+vite.config.ts.timestamp-*.mjs
+vite.config.js.timestamp-*.mjs
+
 # Editor / OS junk
 .DS_Store
 desktop.ini
