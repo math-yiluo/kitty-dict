@@ -971,8 +971,17 @@
     .print-only {
       display: block !important;
       color: black;
+      /* Plangothic MUST lead the stack (matches body / font-han in app.css +
+         tailwind.config.cjs). It's the only bundled font covering Plane-2/3
+         CJK (𪜶 U+2A736 等). Without it here, the print engine falls back to a
+         system font for those chars: desktop browsers happen to have broad CJK
+         coverage so web export looks fine, but the Android WebView print
+         engine (createPrintDocumentAdapter) only has the device's system CJK
+         font, which lacks SIP glyphs — so 𪜶 rendered as tofu in the PDF. The
+         glyph is already loaded on screen, so the print engine embeds it. */
       font-family:
-        'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+        'Plangothic', 'Noto Sans TC', 'Noto Sans CJK TC', 'PingFang TC',
+        'Microsoft JhengHei', system-ui, sans-serif;
     }
     .print-doc {
       max-width: 100%;
